@@ -1,0 +1,354 @@
+/* General Resets and Base Styles (Inspired by Tailwind Preflight) */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: #e5e7eb; /* Default border color (Tailwind gray-200) */
+}
+
+html {
+    line-height: 1.5; /* Global line height, can be overridden */
+    -webkit-text-size-adjust: 100%;
+    -moz-tab-size: 4;
+    tab-size: 4;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #f0f9ff;
+    color: #1f2937;
+    line-height: inherit;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-size: inherit;
+    font-weight: inherit;
+    margin: 0 0 0.3em 0;
+}
+h1 { margin-bottom: 0.5em; }
+h2 { margin-bottom: 0.4em; }
+h3 { margin-bottom: 0.3em; }
+
+
+a {
+    color: inherit;
+    text-decoration: inherit;
+}
+
+button, input, optgroup, select, textarea {
+    font-family: inherit;
+    font-size: 100%;
+    font-weight: inherit;
+    line-height: inherit;
+    color: inherit;
+    margin: 0;
+    padding: 0;
+}
+
+button {
+    background-color: transparent;
+    background-image: none;
+    cursor: pointer;
+}
+
+table {
+    border-collapse: collapse;
+    border-color: inherit;
+    text-indent: 0;
+}
+
+.input-field {
+    transition: all 0.3s ease;
+}
+
+.input-field:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.result-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.result-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.savings-highlight {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
+}
+
+.tab {
+    transition: all 0.3s ease;
+    padding: 0.4rem 0.8rem;
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+}
+
+.tab.active {
+    border-bottom: 3px solid #3b82f6;
+    color: #1e40af;
+}
+
+.contact-link {
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    color: #2563eb;
+    font-weight: 500;
+}
+
+.contact-link:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}
+
+.contact-link svg {
+    height: 1.25rem;
+    width: 1.25rem;
+    margin-right: 0.25rem;
+    fill: currentColor;
+}
+
+.container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+@media (min-width: 640px) { .container { max-width: 640px; } }
+@media (min-width: 768px) { .container { max-width: 768px; } }
+@media (min-width: 1024px) { .container { max-width: 1024px; } }
+@media (min-width: 1280px) { .container { max-width: 1280px; } .container.max-w-5xl { max-width: 64rem; } }
+@media (min-width: 1536px) { .container { max-width: 1536px; } }
+
+.py-8 { padding-top: 1rem; padding-bottom: 1rem; }
+.mb-8 { margin-bottom: 1rem; }
+.mb-6 { margin-bottom: 0.75rem; }
+.mb-4 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 0.25rem; } /* Adjusted for tighter label-input spacing */
+.mb-1 { margin-bottom: 0.1rem; } /* Adjusted for tighter label-input spacing */
+
+.mt-10 { margin-top: 1.5rem; }
+.mt-6 { margin-top: 0.75rem; }
+.mt-3 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 0.25rem; } /* Adjusted for tighter spacing */
+
+.pb-2 { padding-bottom: 0.25rem; } /* Adjusted for tighter spacing */
+.pt-2 { padding-top: 0.25rem; }    /* Adjusted for tighter spacing */
+.p-6 { padding: 0.75rem; }
+.p-5 { padding: 0.75rem; }
+.p-4 { padding: 0.5rem; }
+
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+
+.text-3xl { font-size: 1.875rem; }
+.text-2xl { font-size: 1.5rem; }
+.text-xl { font-size: 1.25rem; }
+.text-lg { font-size: 1.125rem; }
+.text-sm { font-size: 0.875rem; }
+.text-xs { font-size: 0.75rem; }
+
+.font-bold { font-weight: 700; }
+.font-semibold { font-weight: 600; }
+.font-medium { font-weight: 500; }
+
+.text-blue-800 { color: #1e40af; }
+.text-blue-700 { color: #1d4ed8; }
+.text-blue-600 { color: #2563eb; }
+.text-green-700 { color: #047857; }
+.text-green-600 { color: #059669; }
+.text-purple-700 { color: #6b21a8; }
+.text-purple-600 { color: #7e22ce; }
+.text-emerald-700 { color: #047857; }
+.text-emerald-600 { color: #059669; }
+.text-indigo-700 { color: #4338ca; }
+.text-indigo-600 { color: #4f46e5; }
+.text-gray-800 { color: #1f2937; }
+.text-gray-700 { color: #374151; }
+.text-gray-600 { color: #4b5563; }
+.text-gray-500 { color: #6b7281; }
+.text-gray-900 { color: #111827; }
+
+.uppercase { text-transform: uppercase; }
+.tracking-wider { letter-spacing: 0.05em; }
+.whitespace-nowrap { white-space: nowrap; }
+
+.bg-white { background-color: #ffffff; }
+.bg-gray-50 { background-color: #f9fafb; }
+
+.rounded-lg { border-radius: 0.5rem; }
+.rounded-md { border-radius: 0.375rem; }
+
+.shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+.shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+
+.border { border-width: 1px; }
+.border-b { border-bottom-width: 1px; }
+.border-t { border-top-width: 1px; }
+.border-t-4 { border-top-width: 4px; }
+
+.border-gray-200 { border-color: #e5e7eb; }
+.border-gray-300 { border-color: #d1d5db; }
+.border-blue-500 { border-color: #3b82f6; }
+.border-green-500 { border-color: #10b981; }
+.border-purple-500 { border-color: #8b5cf6; }
+.border-emerald-500 { border-color: #10b981; }
+.border-indigo-500 { border-color: #6366f1; }
+
+.flex { display: flex; }
+.inline-flex { display: inline-flex; }
+.grid { display: grid; }
+
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.flex-col { flex-direction: column; }
+
+.gap-6 { gap: 0.75rem; }
+
+.space-y-4 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.5rem; }
+.space-y-2 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.5rem; } /* Default for space-y-2 */
+
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+.min-w-full { min-width: 100%; }
+
+input.input-field {
+    display: block;
+    width: 100%;
+    padding: 0.4rem 0.8rem;
+    border-width: 1px;
+    border-color: #d1d5db;
+    border-radius: 0.375rem;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+}
+input.input-field:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+button#calculateBtn {
+    background-color: #2563eb;
+    color: white;
+    font-weight: 500;
+    padding: 0.4rem 1.2rem;
+    border-radius: 0.375rem;
+    transition-property: background-color, transform, box-shadow;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+}
+button#calculateBtn:hover {
+    background-color: #1d4ed8;
+    transform: scale(1.05);
+}
+button#calculateBtn:focus {
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px rgba(59, 130, 246, 0.5);
+}
+
+.overflow-x-auto { overflow-x: auto; }
+.divide-y > :not([hidden]) ~ :not([hidden]) {
+    border-top-width: 1px;
+    border-color: #e5e7eb;
+}
+
+/* --- ADJUSTED TABLE CELL PADDING AND LINE HEIGHT FOR COMPACTNESS --- */
+th.px-6, td.px-6 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+th.py-3, td.py-4 { /* This rule targets the th and td elements based on classes from your HTML */
+    padding-top: 1rem;    /* Significantly Reduced */
+    padding-bottom: 1rem; /* Significantly Reduced */
+    line-height: 1.2;       /* Added for tighter line spacing within cells */
+}
+/* If your th/td elements don't always have .py-3 or .py-4, you might need a more general table cell selector: */
+/*
+#tableAll td, #tableAll th,
+#tableOctaneLpg td, #tableOctaneLpg th,
+#tableOctaneCng td, #tableOctaneCng th,
+#tableLpgCng td, #tableLpgCng th {
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+    line-height: 1.2;
+}
+*/
+/* --- END OF ADJUSTED TABLE CELL PADDING --- */
+
+
+@media (min-width: 768px) {
+    .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .md\:text-4xl { font-size: 2.25rem; }
+}
+
+.hidden { display: none; }
+
+.result-card.savings-highlight.border-emerald-500 > .flex,
+.result-card.savings-highlight.border-indigo-500 > .flex {
+    justify-content: flex-start;
+    height: auto;
+}
+
+div.bg-white.rounded-lg.shadow-lg.p-6.mb-8 {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+}
+
+#resultsSection > h2.text-2xl {
+    margin-bottom: 0.75rem;
+}
+
+#resultsSection > div.bg-white.rounded-lg.shadow-md.p-6 {
+    padding: 0.75rem;
+    margin-top: 1rem;
+}
+
+#resultsSection > div.bg-white.rounded-lg.shadow-md.p-6 > h3.text-xl {
+    margin-bottom: 0.5rem;
+}
+
+/* --- NEW CSS RULES FOR TIGHTER LINE SPACING IN TOP RESULT CARDS --- */
+.result-card.border-blue-500 .space-y-2.text-gray-600 p,
+.result-card.border-green-500 .space-y-2.text-gray-600 p,
+.result-card.border-purple-500 .space-y-2.text-gray-600 p {
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+}
+
+.result-card.border-blue-500 > .space-y-2.text-gray-600 > :not([hidden]) ~ :not([hidden]),
+.result-card.border-green-500 > .space-y-2.text-gray-600 > :not([hidden]) ~ :not([hidden]),
+.result-card.border-purple-500 > .space-y-2.text-gray-600 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 0.1rem;
+}
+
+.result-card.border-blue-500 .space-y-2.text-gray-600 .pt-2.mt-2,
+.result-card.border-green-500 .space-y-2.text-gray-600 .pt-2.mt-2,
+.result-card.border-purple-500 .space-y-2.text-gray-600 .pt-2.mt-2 {
+    padding-top: 0.2rem;
+    margin-top: 0.2rem;
+}
+/* --- END OF NEW CSS RULES --- */

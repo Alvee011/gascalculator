@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://alvee011.github.io/gascalculator/sitemap.xml

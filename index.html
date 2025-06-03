@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fuel Cost Comparison Calculator</title>
+    <link>
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fuel Cost Comparison Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css"> </head>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-blue-800 mb-2">Fuel Cost Comparison Calculator</h1>
+            <p class="text-gray-600">Calculate and compare your vehicle running costs for Octane, LPG, and CNG</p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <h2 class="text-xl font-semibold text-gray-800 border-b pb-2">Vehicle Details</h2>
+                    
+                    <div>
+                        <label for="distance" class="block text-sm font-medium text-gray-700 mb-1">Total Distance (km)</label>
+                        <input type="number" id="distance" class="input-field w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="e.g. 1000" value="1000">
+                    </div>
+                    
+                    <div>
+                        <label for="octaneMileage" class="block text-sm font-medium text-gray-700 mb-1">Octane Mileage (km/L)</label>
+                        <input type="number" id="octaneMileage" class="input-field w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="e.g. 8 means 8Km/L" value="8">
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    <h2 class="text-xl font-semibold text-gray-800 border-b pb-2">Fuel Prices</h2>
+                    
+                    <div>
+                        <label for="octanePrice" class="block text-sm font-medium text-gray-700 mb-1">Octane Price (tk/L)</label>
+                        <input type="number" id="octanePrice" class="input-field w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" value="122">
+                    </div>
+                    
+                    <div>
+                        <label for="lpgPrice" class="block text-sm font-medium text-gray-700 mb-1">LPG Price (tk/L)</label>
+                        <input type="number" id="lpgPrice" class="input-field w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" value="67">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6 text-center">
+                <button id="calculateBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                    Calculate Savings
+                </button>
+            </div>
+        </div>
+
+        <div id="resultsSection" class="hidden">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Cost Comparison Results</h2>
+            <!-- Octane Section -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="result-card bg-white rounded-lg shadow-md p-5 border-t-4 border-blue-500">
+                    <h3 class="text-lg font-semibold text-blue-700 mb-3">Octane Cost</h3>
+                    <div class="space-y-2 text-gray-600">
+                        <p>Fuel Required: <span id="octaneLiters" class="font-medium text-gray-800">0</span> L</p>
+                        <p>Cost per Liter: <span id="octanePriceDisplay" class="font-medium text-gray-800">0</span> tk</p>
+                        <p>Cost per km: <span id="octaneCostPerKmDisplay" class="font-medium text-gray-800">0</span> tk</p>
+                        <div class="pt-1 mt-2 border-t border-gray-200">
+                            <p class="text-xl font-bold text-blue-600">Total: <span id="octaneCost">0</span> tk</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- LPG Section -->
+                <div class="result-card bg-white rounded-lg shadow-md p-5 border-t-4 border-green-500">
+                    <h3 class="text-lg font-semibold text-green-700 mb-3">LPG Cost</h3>
+                    <div class="space-y-2 text-gray-600">
+                        <p>Adjusted Mileage: <span id="lpgMileage" class="font-medium text-gray-800">0</span> km/L</p>
+                        <p>LPG Required: <span id="lpgLiters" class="font-medium text-gray-800">0</span> L</p>
+                        <p>Cost per km: <span id="lpgPriceDisplay" class="font-medium text-gray-800">0</span> tk</p>
+                        <div class="pt-1 mt-2 border-t border-gray-200">
+                            <p class="text-xl font-bold text-green-600">Total: <span id="lpgCost">0</span> tk</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- CNG Section -->
+                <div class="result-card bg-white rounded-lg shadow-md p-5 border-t-4 border-purple-500">
+                    <h3 class="text-lg font-semibold text-purple-700 mb-3">CNG Cost</h3>
+                    <div class="space-y-2 text-gray-600">
+                        <p>CNG Range per Fill: <span id="cngRange" class="font-medium text-gray-800">0</span> km</p>
+                        <p>Total Fill-ups: <span id="cngFillups" class="font-medium text-gray-800">0</span></p>
+                        <p>Cost per km: <span id="cngCostPerKm" class="font-medium text-gray-800">0</span> tk</p>
+                        <div class="pt-1 mt-2 border-t border-gray-200">
+                            <p class="text-xl font-bold text-purple-600">Total: <span id="cngCost">0</span> tk</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Savings Comparison Section -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="result-card savings-highlight bg-white rounded-lg shadow-md p-5 border-t-4 border-emerald-500">
+                    <h3 class="text-lg font-semibold text-emerald-700 mb-1">LPG vs Octane Savings</h3>
+                    <div class="flex flex-col items-center justify-center h-full">
+                        <div class="text-center">
+                            <p class="text-2xl font-bold text-emerald-600 mb-1">
+                                <span id="lpgSavingsAmount">0</span> tk
+                            </p>
+                            <p class="text-gray-600">by using LPG instead of Octane</p>
+                            <p class="mt-3 text-sm font-medium text-emerald-700">
+                                That's <span id="lpgSavingsPercentage">0</span>% less!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-card savings-highlight bg-white rounded-lg shadow-md p-5 border-t-4 border-indigo-500">
+                    <h3 class="text-lg font-semibold text-indigo-700 mb-1">CNG vs Octane Savings</h3>
+                    <div class="flex flex-col items-center justify-center h-full">
+                        <div class="text-center">
+                            <p class="text-2xl font-bold text-indigo-600 mb-1">
+                                <span id="cngSavingsAmount">0</span> tk
+                            </p>
+                            <p class="text-gray-600">by using CNG instead of Octane</p>
+                            <p class="mt-3 text-sm font-medium text-indigo-700">
+                                That's <span id="cngSavingsPercentage">0</span>% less!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- CNG vs LPG Comparison -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">CNG vs LPG Comparison</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border rounded-lg p-4">
+                        <h4 class="font-medium text-lg mb-2">Cost Comparison</h4>
+                        <div class="space-y-2">
+                            <p>CNG Total Cost: <span id="cngTotalCost" class="font-medium text-purple-600">0</span> tk</p>
+                            <p>LPG Total Cost: <span id="lpgTotalCost" class="font-medium text-green-600">0</span> tk</p>
+                            <p class="font-bold border-t pt-2 mt-2">
+                                <span id="cngVsLpgLabel">Savings with CNG:</span> 
+                                <span id="cngVsLpgSavings" class="text-indigo-600">0</span> tk
+                            </p>
+                        </div>
+                    </div>
+                    <div class="border rounded-lg p-4">
+                        <h4 class="font-medium text-lg mb-2">Efficiency Comparison</h4>
+                        <div class="space-y-2">
+                            <p>CNG Cost per km: <span id="cngEfficiency" class="font-medium text-purple-600">0</span> tk/km</p>
+                            <p>LPG Cost per km: <span id="lpgEfficiency" class="font-medium text-green-600">0</span> tk/km</p>
+                            <p class="font-bold border-t pt-2 mt-2">
+                                Difference: <span id="efficiencyDifference" class="text-indigo-600">0</span> tk/km
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Detailed Comparison</h3>
+                
+                <!-- Tabs -->
+                <div class="flex border-b mb-4">
+                    <button id="tabAll" class="tab active px-4 py-2 font-medium">All Fuels</button>
+                    <button id="tabOctaneLpg" class="tab px-4 py-2 font-medium">Octane vs LPG</button>
+                    <button id="tabOctaneCng" class="tab px-4 py-2 font-medium">Octane vs CNG</button>
+                    <button id="tabLpgCng" class="tab px-4 py-2 font-medium">LPG vs CNG</button>
+                </div>
+                
+                <!-- All Fuels Table -->
+                <div id="tableAll" class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr>
+                                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Metric</th>
+                                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Octane</th>
+                                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">LPG</th>
+                                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">CNG</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Cost per km (tk)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="costPerKmOctane">0</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="costPerKmLPG">0</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="costPerKmCNG">0</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Total Cost (tk)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600" id="totalCostOctane">0</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600" id="totalCostLPG">0</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-purple-600" id="totalCostCNG">0</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Savings vs Octane (tk)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-emerald-600" id="savingsLPG">0</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600" id="savingsCNG">0</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Savings Percentage</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-emerald-600" id="savingsPercentLPG">0%</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600" id="savingsPercentCNG">0%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Octane vs LPG Table -->
+                <div id="tableOctaneLpg" class="overflow-x-auto hidden">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr>
+                                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Metric</th>
+                                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Octane</th>
+                                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">LPG</th>
+                                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Difference</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Mileage (km/L)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tableMileageOctane">0</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tableMileageLPG">0</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-15%</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Fuel Required (L)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tableLitersOctane">0</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tableLitersLPG">0</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tableLitersDiff">0</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Cost per Liter (tk)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tablePriceOctane">0</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tablePriceLPG">0</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tablePriceDiff">0</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Total Cost (tk)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600" id="tableCostOctane">0</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600" id="tableCostLPG">0</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-emerald-600" id="tableSavings">0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Octane vs CNG Table -->
+                <div id="tableOctaneCng" class="overflow-x-auto hidden">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr>
+                                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Metric</th>
+                                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Octane</th>
+                                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">CNG</th>
+                                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Difference</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Cost per km (tk)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tableOctaneCostPerKm">0</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tableCngCostPerKm">0</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tableCostPerKmDiff">0</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Range per Fill (km)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Varies</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tableCngRange">0</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Total Cost (tk)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600" id="tableOctaneTotalCost">0</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-purple-600" id="tableCngTotalCost">0</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600" id="tableCngSavings">0</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Savings Percentage</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600" id="tableCngSavingsPercent">0%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- LPG vs CNG Table -->
+                <div id="tableLpgCng" class="overflow-x-auto hidden">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr>
+                                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Metric</th>
+                                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">LPG</th>
+                                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">CNG</th>
+                                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Difference</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Cost per km (tk)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tableLpgCostPerKm">0</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tableCngCostPerKm2">0</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tableLpgCngCostDiff">0</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Total Cost (tk)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600" id="tableLpgTotalCost">0</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-purple-600" id="tableCngTotalCost2">0</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600" id="tableLpgCngDiff">0</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Most Economical</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" colspan="3" id="tableMostEconomical">-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Copyright Footer ©Alvee -->
+        <div class="mt-10 text-center py-4 border-t border-gray-200">
+            <div class="text-gray-600 text-sm mb-2">
+                © 2025 Fuel Cost Comparison Calculator | Designed By Faruque Azam Alvee
+            </div>
+            <div>
+                <a href="https://alvee.bio.link/" target="_blank" class="contact-link inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                    </svg>
+                    Contact Me
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up the calculate button
+            const calculateBtn = document.getElementById('calculateBtn');
+            calculateBtn.addEventListener('click', calculateCosts);
+            
+            // Set up tabs
+            const tabs = document.querySelectorAll('.tab');
+            const tables = ['tableAll', 'tableOctaneLpg', 'tableOctaneCng', 'tableLpgCng'];
+            
+            tabs.forEach((tab, index) => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
+                    
+                    // Hide all tables
+                    tables.forEach(tableId => {
+                        document.getElementById(tableId).classList.add('hidden');
+                    });
+                    
+                    // Show the selected table
+                    document.getElementById(tables[index]).classList.remove('hidden');
+                });
+            });
+            
+            // Calculate on page load with default values
+            calculateCosts();
+            
+            function calculateCosts() {
+                // Get input values
+                const distance = parseFloat(document.getElementById('distance').value) || 0;
+                const octaneMileage = parseFloat(document.getElementById('octaneMileage').value) || 0;
+                const octanePrice = parseFloat(document.getElementById('octanePrice').value) || 0;
+                const lpgPrice = parseFloat(document.getElementById('lpgPrice').value) || 0;
+                
+                // Validate inputs
+                if (distance <= 0 || octaneMileage <= 0 || octanePrice <= 0 || lpgPrice <= 0) {
+                    alert('Please enter valid positive numbers for all fields.');
+                    return;
+                }
+                
+                // Calculate Octane costs
+                const octaneLiters = distance / octaneMileage;
+                const octaneCost = octaneLiters * octanePrice;
+                const octaneCostPerKm = octaneCost / distance;
+                
+                // Calculate LPG costs (15% lower mileage)
+                const lpgMileage = octaneMileage * 0.85;
+                const lpgLiters = distance / lpgMileage;
+                const lpgCost = lpgLiters * lpgPrice;
+                const lpgCostPerKm = lpgCost / distance;
+                
+                // Calculate LPG savings
+                const lpgSavings = octaneCost - lpgCost;
+                const lpgSavingsPercentage = (lpgSavings / octaneCost) * 100;
+                
+                // Calculate CNG costs (55% less than Octane)
+                // Determine CNG range per fill based on octane mileage
+                let cngRangePerFill = 0;
+                if (octaneMileage < 8) {
+                    cngRangePerFill = 80;
+                } else if (octaneMileage > 20) {
+                    cngRangePerFill = 150;
+                } else {
+                    // For mileage between 8 and 20, calculate range (10 km/L = 100 km range)
+                    cngRangePerFill = Math.min(80 + (octaneMileage - 8) * 10, 150);
+                }
+                
+                // Calculate number of CNG fill-ups needed
+                const cngFillups = Math.ceil(distance / cngRangePerFill);
+                
+                // CNG cost is 55% less than Octane cost
+                const cngCost = octaneCost * 0.45; // 45% of Octane cost (55% less)
+                const cngCostPerKm = cngCost / distance;
+                
+                // Calculate CNG savings
+                const cngSavings = octaneCost - cngCost;
+                const cngSavingsPercentage = (cngSavings / octaneCost) * 100;
+                
+                // Compare LPG and CNG
+                const lpgVsCngSavings = lpgCost - cngCost;
+                const costPerKmDifference = Math.abs(lpgCostPerKm - cngCostPerKm);
+                const mostEfficientFuel = cngCostPerKm < lpgCostPerKm ? "CNG" : "LPG";
+                
+                // Update the results section
+                document.getElementById('resultsSection').classList.remove('hidden');
+                
+                // Update Octane card
+                document.getElementById('octaneLiters').textContent = octaneLiters.toFixed(2);
+                document.getElementById('octanePriceDisplay').textContent = octanePrice.toFixed(2);
+                document.getElementById('octaneCostPerKmDisplay').textContent = octaneCostPerKm.toFixed(2);
+                document.getElementById('octaneCost').textContent = octaneCost.toFixed(2);
+                
+                // Update LPG card
+                document.getElementById('lpgMileage').textContent = lpgMileage.toFixed(2);
+                document.getElementById('lpgLiters').textContent = lpgLiters.toFixed(2);
+                document.getElementById('lpgPriceDisplay').textContent = lpgCostPerKm.toFixed(2);
+                document.getElementById('lpgCost').textContent = lpgCost.toFixed(2);
+                
+                // Update CNG card
+                document.getElementById('cngRange').textContent = cngRangePerFill.toFixed(0);
+                document.getElementById('cngFillups').textContent = cngFillups;
+                document.getElementById('cngCostPerKm').textContent = cngCostPerKm.toFixed(2);
+                document.getElementById('cngCost').textContent = cngCost.toFixed(2);
+                
+                // Update LPG Savings card
+                document.getElementById('lpgSavingsAmount').textContent = lpgSavings.toFixed(2);
+                document.getElementById('lpgSavingsPercentage').textContent = lpgSavingsPercentage.toFixed(1);
+                
+                // Update CNG Savings card
+                document.getElementById('cngSavingsAmount').textContent = cngSavings.toFixed(2);
+                document.getElementById('cngSavingsPercentage').textContent = cngSavingsPercentage.toFixed(1);
+                
+                // Update CNG vs LPG comparison
+                document.getElementById('cngTotalCost').textContent = cngCost.toFixed(2);
+                document.getElementById('lpgTotalCost').textContent = lpgCost.toFixed(2);
+                
+                if (cngCost < lpgCost) {
+                    document.getElementById('cngVsLpgLabel').textContent = "Savings with CNG:";
+                    document.getElementById('cngVsLpgSavings').textContent = lpgVsCngSavings.toFixed(2);
+                } else {
+                    document.getElementById('cngVsLpgLabel').textContent = "Savings with LPG:";
+                    document.getElementById('cngVsLpgSavings').textContent = (-lpgVsCngSavings).toFixed(2);
+                }
+                
+                document.getElementById('cngEfficiency').textContent = cngCostPerKm.toFixed(2);
+                document.getElementById('lpgEfficiency').textContent = lpgCostPerKm.toFixed(2);
+                document.getElementById('efficiencyDifference').textContent = costPerKmDifference.toFixed(2);
+                
+                // Update All Fuels table
+                document.getElementById('costPerKmOctane').textContent = octaneCostPerKm.toFixed(2);
+                document.getElementById('costPerKmLPG').textContent = lpgCostPerKm.toFixed(2);
+                document.getElementById('costPerKmCNG').textContent = cngCostPerKm.toFixed(2);
+                document.getElementById('totalCostOctane').textContent = octaneCost.toFixed(2);
+                document.getElementById('totalCostLPG').textContent = lpgCost.toFixed(2);
+                document.getElementById('totalCostCNG').textContent = cngCost.toFixed(2);
+                document.getElementById('savingsLPG').textContent = lpgSavings.toFixed(2);
+                document.getElementById('savingsCNG').textContent = cngSavings.toFixed(2);
+                document.getElementById('savingsPercentLPG').textContent = lpgSavingsPercentage.toFixed(1) + "%";
+                document.getElementById('savingsPercentCNG').textContent = cngSavingsPercentage.toFixed(1) + "%";
+                
+                // Update Octane vs LPG table
+                document.getElementById('tableMileageOctane').textContent = octaneMileage.toFixed(2);
+                document.getElementById('tableMileageLPG').textContent = lpgMileage.toFixed(2);
+                document.getElementById('tableLitersOctane').textContent = octaneLiters.toFixed(2);
+                document.getElementById('tableLitersLPG').textContent = lpgLiters.toFixed(2);
+                document.getElementById('tableLitersDiff').textContent = (lpgLiters - octaneLiters).toFixed(2);
+                document.getElementById('tablePriceOctane').textContent = octanePrice.toFixed(2);
+                document.getElementById('tablePriceLPG').textContent = lpgPrice.toFixed(2);
+                document.getElementById('tablePriceDiff').textContent = (lpgPrice - octanePrice).toFixed(2);
+                document.getElementById('tableCostOctane').textContent = octaneCost.toFixed(2);
+                document.getElementById('tableCostLPG').textContent = lpgCost.toFixed(2);
+                document.getElementById('tableSavings').textContent = lpgSavings.toFixed(2);
+                
+                // Update Octane vs CNG table
+                document.getElementById('tableOctaneCostPerKm').textContent = octaneCostPerKm.toFixed(2);
+                document.getElementById('tableCngCostPerKm').textContent = cngCostPerKm.toFixed(2);
+                document.getElementById('tableCostPerKmDiff').textContent = (octaneCostPerKm - cngCostPerKm).toFixed(2);
+                document.getElementById('tableCngRange').textContent = cngRangePerFill.toFixed(0);
+                document.getElementById('tableOctaneTotalCost').textContent = octaneCost.toFixed(2);
+                document.getElementById('tableCngTotalCost').textContent = cngCost.toFixed(2);
+                document.getElementById('tableCngSavings').textContent = cngSavings.toFixed(2);
+                document.getElementById('tableCngSavingsPercent').textContent = cngSavingsPercentage.toFixed(1) + "%";
+                
+                // Update LPG vs CNG table
+                document.getElementById('tableLpgCostPerKm').textContent = lpgCostPerKm.toFixed(2);
+                document.getElementById('tableCngCostPerKm2').textContent = cngCostPerKm.toFixed(2);
+                document.getElementById('tableLpgCngCostDiff').textContent = costPerKmDifference.toFixed(2);
+                document.getElementById('tableLpgTotalCost').textContent = lpgCost.toFixed(2);
+                document.getElementById('tableCngTotalCost2').textContent = cngCost.toFixed(2);
+                document.getElementById('tableLpgCngDiff').textContent = Math.abs(lpgCost - cngCost).toFixed(2);
+                document.getElementById('tableMostEconomical').textContent = `${mostEfficientFuel} is more economical by ${costPerKmDifference.toFixed(2)} tk per km`;
+            }
+        });
+    </script>
+</body>
+</html>

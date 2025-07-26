@@ -7,52 +7,813 @@
     <meta name="description" content="Calculate your car running costs on Octane,LPG, and gas, then see how much you spend and save with alternatives. Easy to use fuel cost calculator.">
     <link rel="icon" href="icon.png" type="image/x-icon">
     <title>Fuel Cost Comparison Calculator</title>
-    <link>
-    <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fuel Cost Comparison Calculator</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css"> </head>
+    
+    <!-- Three.js & GSAP CDNs for effects -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+    <style>
+        /* General Resets and Base Styles (Inspired by Tailwind Preflight) */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            border-width: 0;
+            border-style: solid;
+            border-color: #e5e7eb; /* Default border color (Tailwind gray-200) */
+        }
+
+        html {
+            line-height: 1.5; /* Global line height, can be overridden */
+            -webkit-text-size-adjust: 100%;
+            -moz-tab-size: 4;
+            tab-size: 4;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f9ff;
+            color: #1f2937;
+            line-height: inherit;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-size: inherit;
+            font-weight: inherit;
+            margin: 0 0 0.3em 0;
+        }
+        h1 { margin-bottom: 0.5em; }
+        h2 { margin-bottom: 0.4em; }
+        h3 { margin-bottom: 0.3em; }
+
+
+        a {
+            color: inherit;
+            text-decoration: inherit;
+        }
+
+        button, input, optgroup, select, textarea {
+            font-family: inherit;
+            font-size: 100%;
+            font-weight: inherit;
+            line-height: inherit;
+            color: inherit;
+            margin: 0;
+            padding: 0;
+        }
+
+        button {
+            background-color: transparent;
+            background-image: none;
+            cursor: pointer;
+        }
+
+        table {
+            border-collapse: collapse;
+            border-color: inherit;
+            text-indent: 0;
+        }
+
+        .input-field {
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+
+        .result-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .savings-highlight {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+
+        .tab {
+            transition: all 0.3s ease;
+            padding: 0.4rem 0.8rem;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab.active {
+            border-bottom: 3px solid #3b82f6;
+            color: #1e40af;
+        }
+
+        .contact-link {
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            color: #2563eb;
+            font-weight: 500;
+        }
+
+        .contact-link:hover {
+            color: #1d4ed8;
+            text-decoration: underline;
+        }
+
+        .contact-link svg {
+            height: 1.25rem;
+            width: 1.25rem;
+            margin-right: 0.25rem;
+            fill: currentColor;
+        }
+
+        .container {
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        @media (min-width: 640px) { .container { max-width: 640px; } }
+        @media (min-width: 768px) { .container { max-width: 768px; } }
+        @media (min-width: 1024px) { .container { max-width: 1024px; } }
+        @media (min-width: 1280px) { .container { max-width: 1280px; } .container.max-w-5xl { max-width: 64rem; } }
+        @media (min-width: 1536px) { .container { max-width: 1536px; } }
+
+        .py-8 { padding-top: 1rem; padding-bottom: 1rem; }
+        .mb-8 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 0.75rem; }
+        .mb-4 { margin-bottom: 0.5rem; }
+        .mb-3 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 0.25rem; } /* Adjusted for tighter label-input spacing */
+        .mb-1 { margin-bottom: 0.1rem; } /* Adjusted for tighter label-input spacing */
+
+        .mt-10 { margin-top: 1.5rem; }
+        .mt-6 { margin-top: 0.75rem; }
+        .mt-3 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 0.25rem; } /* Adjusted for tighter spacing */
+
+        .pb-2 { padding-bottom: 0.25rem; } /* Adjusted for tighter spacing */
+        .pt-2 { padding-top: 0.25rem; }    /* Adjusted for tighter spacing */
+        .p-6 { padding: 0.75rem; }
+        .p-5 { padding: 0.75rem; }
+        .p-4 { padding: 0.5rem; }
+
+        .text-center { text-align: center; }
+        .text-left { text-align: left; }
+
+        .text-3xl { font-size: 1.875rem; }
+        .text-2xl { font-size: 1.5rem; }
+        .text-xl { font-size: 1.25rem; }
+        .text-lg { font-size: 1.125rem; }
+        .text-sm { font-size: 0.875rem; }
+        .text-xs { font-size: 0.75rem; }
+
+        .font-bold { font-weight: 700; }
+        .font-semibold { font-weight: 600; }
+        .font-medium { font-weight: 500; }
+
+        .text-blue-800 { color: #1e40af; }
+        .text-blue-700 { color: #1d4ed8; }
+        .text-blue-600 { color: #2563eb; }
+        .text-green-700 { color: #047857; }
+        .text-green-600 { color: #059669; }
+        .text-purple-700 { color: #6b21a8; }
+        .text-purple-600 { color: #7e22ce; }
+        .text-emerald-700 { color: #047857; }
+        .text-emerald-600 { color: #059669; }
+        .text-indigo-700 { color: #4338ca; }
+        .text-indigo-600 { color: #4f46e5; }
+        .text-gray-800 { color: #1f2937; }
+        .text-gray-700 { color: #374151; }
+        .text-gray-600 { color: #4b5563; }
+        .text-gray-500 { color: #6b7281; }
+        .text-gray-900 { color: #111827; }
+
+        .uppercase { text-transform: uppercase; }
+        .tracking-wider { letter-spacing: 0.05em; }
+        .whitespace-nowrap { white-space: nowrap; }
+
+        .bg-white { background-color: #ffffff; }
+        .bg-gray-50 { background-color: #f9fafb; }
+
+        .rounded-lg { border-radius: 0.5rem; }
+        .rounded-md { border-radius: 0.375rem; }
+
+        .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+
+        .border { border-width: 1px; }
+        .border-b { border-bottom-width: 1px; }
+        .border-t { border-top-width: 1px; }
+        .border-t-4 { border-top-width: 4px; }
+
+        .border-gray-200 { border-color: #e5e7eb; }
+        .border-gray-300 { border-color: #d1d5db; }
+        .border-blue-500 { border-color: #3b82f6; }
+        .border-green-500 { border-color: #10b981; }
+        .border-purple-500 { border-color: #8b5cf6; }
+        .border-emerald-500 { border-color: #10b981; }
+        .border-indigo-500 { border-color: #6366f1; }
+
+        .flex { display: flex; }
+        .inline-flex { display: inline-flex; }
+        .grid { display: grid; }
+
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .flex-col { flex-direction: column; }
+
+        .gap-6 { gap: 0.75rem; }
+
+        .space-y-4 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.5rem; }
+        .space-y-2 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.5rem; } /* Default for space-y-2 */
+
+        .w-full { width: 100%; }
+        .h-full { height: 100%; }
+        .min-w-full { min-width: 100%; }
+
+        input.input-field {
+            display: block;
+            width: 100%;
+            padding: 0.4rem 0.8rem;
+            border-width: 1px;
+            border-color: #d1d5db;
+            border-radius: 0.375rem;
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+        }
+        input.input-field:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+
+        button#calculateBtn {
+            background-color: #2563eb;
+            color: white;
+            font-weight: 500;
+            padding: 0.4rem 1.2rem;
+            border-radius: 0.375rem;
+            transition-property: background-color, transform, box-shadow;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 300ms;
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+        }
+        button#calculateBtn:hover {
+            background-color: #1d4ed8;
+            transform: scale(1.05);
+        }
+        button#calculateBtn:focus {
+            box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px rgba(59, 130, 246, 0.5);
+        }
+
+        .overflow-x-auto { overflow-x: auto; }
+        .divide-y > :not([hidden]) ~ :not([hidden]) {
+            border-top-width: 1px;
+            border-color: #e5e7eb;
+        }
+
+        th.px-6, td.px-6 {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+        th.py-3, td.py-4 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        @media (min-width: 768px) {
+            .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .md\:text-4xl { font-size: 2.25rem; }
+        }
+
+        .hidden { display: none; }
+
+        .result-card.savings-highlight.border-emerald-500 > .flex,
+        .result-card.savings-highlight.border-indigo-500 > .flex {
+            justify-content: flex-start;
+            height: auto;
+        }
+
+        div.bg-white.rounded-lg.shadow-lg.p-6.mb-8 {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+        }
+
+        #resultsSection > h2.text-2xl {
+            margin-bottom: 0.75rem;
+        }
+
+        #resultsSection > div.bg-white.rounded-lg.shadow-md.p-6 {
+            padding: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        #resultsSection > div.bg-white.rounded-lg.shadow-md.p-6 > h3.text-xl {
+            margin-bottom: 0.5rem;
+        }
+
+        .result-card.border-blue-500 .space-y-2.text-gray-600 p,
+        .result-card.border-green-500 .space-y-2.text-gray-600 p,
+        .result-card.border-purple-500 .space-y-2.text-gray-600 p {
+            line-height: 1.5;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-card.border-blue-500 > .space-y-2.text-gray-600 > :not([hidden]) ~ :not([hidden]),
+        .result-card.border-green-500 > .space-y-2.text-gray-600 > :not([hidden]) ~ :not([hidden]),
+        .result-card.border-purple-500 > .space-y-2.text-gray-600 > :not([hidden]) ~ :not([hidden]) {
+            margin-top: 0.1rem;
+        }
+
+        .result-card.border-blue-500 .space-y-2.text-gray-600 .pt-2.mt-2,
+        .result-card.border-green-500 .space-y-2.text-gray-600 .pt-2.mt-2,
+        .result-card.border-purple-500 .space-y-2.text-gray-600 .pt-2.mt-2 {
+            padding-top: 0.2rem;
+            margin-top: 0.2rem;
+        }
+
+
+        /* ===================================================================== */
+        /* === NEW STYLES FOR SETTINGS, DARK THEME, AND CURSOR (APPENDED) === */
+        /* ===================================================================== */
+
+        /* Settings Icon */
+        .settings-icon {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            background-color: white;
+            color: #4b5563; /* gray-600 */
+            border: 1px solid #e5e7eb; /* gray-200 */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+        .settings-icon:hover {
+            transform: scale(1.1) rotate(20deg);
+            color: #2563eb; /* blue-600 */
+        }
+
+        /* Redesigned Settings Modal */
+        .settings-modal {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .settings-modal.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .settings-modal-content {
+            background-color: #ffffff;
+            color: #1f2937;
+            padding: 0;
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 480px;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            overflow: hidden;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        .settings-modal.visible .settings-modal-content {
+            transform: scale(1);
+        }
+        
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .settings-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        .close-settings-btn {
+            background: #f3f4f6;
+            border: none;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #6b7281;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .close-settings-btn:hover {
+            background-color: #e5e7eb;
+            color: #1f2937;
+        }
+        
+        .settings-body {
+            padding: 1.5rem;
+        }
+        .setting-group {
+            margin-bottom: 2rem;
+        }
+        .setting-group:last-child {
+            margin-bottom: 0;
+        }
+        .setting-group h3 {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+        
+        /* Theme Selector */
+        .theme-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .theme-option {
+            position: relative;
+        }
+        .theme-option input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .theme-label {
+            display: block;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 500;
+            transition: border-color 0.2s, background-color 0.2s, color 0.2s;
+        }
+        .theme-option input:checked + .theme-label {
+            border-color: #2563eb;
+            background-color: #eff6ff;
+            color: #1e40af;
+        }
+        .theme-option input:focus + .theme-label {
+             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        
+        /* Logic Inputs */
+        .logic-input label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        .logic-input input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            background-color: #f9fafb;
+        }
+        .logic-input p {
+            font-size: 0.75rem;
+            color: #6b7281;
+            margin-top: 0.5rem;
+        }
+        
+        #save-settings-btn {
+            width: 100%;
+            background-color: #2563eb;
+            color: white;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        #save-settings-btn:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-2px);
+        }
+
+
+        /* Custom Cursor & Dark Mode Canvas */
+        .cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 10000;
+            mix-blend-mode: difference;
+            display: none;
+        }
+        .cursor-shape {
+            width: 12px;
+            height: 12px;
+            background-color: white;
+            border-radius: 50%;
+            will-change: transform;
+        }
+
+        #dark-theme-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            display: none;
+        }
+
+        .main-container {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Dark Theme Overrides */
+        body[data-theme="dark"] {
+            background-color: #000000;
+            color: #F5F5F5;
+        }
+        
+        body.custom-cursor-active {
+             cursor: none;
+        }
+        
+        body.custom-cursor-active a,
+        body.custom-cursor-active button,
+        body.custom-cursor-active input,
+        body.custom-cursor-active label[for] {
+            cursor: none;
+        }
+
+        body[data-theme="dark"] .cursor,
+        body[data-theme="dark"] #dark-theme-canvas {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        body[data-theme="dark"] .content-card {
+            background-color: rgba(26, 26, 29, 0.75);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body[data-theme="dark"] h1,
+        body[data-theme="dark"] h2,
+        body[data-theme="dark"] h3,
+        body[data-theme="dark"] h4 {
+            color: #F5F5F5;
+        }
+
+        body[data-theme="dark"] .text-gray-600,
+        body[data-theme="dark"] .text-gray-500,
+        body[data-theme="dark"] .text-sm.font-medium.text-gray-700 {
+            color: #A9A9A9;
+        }
+
+        body[data-theme="dark"] .text-gray-800,
+        body[data-theme="dark"] .text-gray-900,
+        body[data-theme="dark"] span.font-medium.text-gray-800 {
+            color: #F5F5F5;
+        }
+
+        body[data-theme="dark"] .text-blue-800,
+        body[data-theme="dark"] .text-blue-700,
+        body[data-theme="dark"] .text-blue-600 {
+            color: #60a5fa;
+        }
+
+        body[data-theme="dark"] .text-green-700,
+        body[data-theme="dark"] .text-green-600,
+        body[data-theme="dark"] .text-emerald-700,
+        body[data-theme="dark"] .text-emerald-600 {
+            color: #34d399;
+        }
+
+        body[data-theme="dark"] .text-purple-700,
+        body[data-theme="dark"] .text-purple-600 {
+            color: #a78bfa;
+        }
+        body[data-theme="dark"] .text-indigo-700,
+        body[data-theme="dark"] .text-indigo-600 {
+            color: #818cf8;
+        }
+
+        body[data-theme="dark"] .input-field {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #F5F5F5;
+        }
+
+        body[data-theme="dark"] .input-field:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
+        }
+
+        body[data-theme="dark"] .border-t,
+        body[data-theme="dark"] .border-b,
+        body[data-theme="dark"] .border {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        body[data-theme="dark"] .bg-gray-50 {
+            background-color: rgba(40, 40, 45, 0.8);
+        }
+        body[data-theme="dark"] .divide-y > :not([hidden]) ~ :not([hidden]) {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* FIX FOR DARK MODE TABLE */
+        body[data-theme="dark"] .bg-white {
+            background-color: transparent;
+        }
+        body[data-theme="dark"] table .text-gray-900 {
+            color: #F5F5F5;
+        }
+        body[data-theme="dark"] table .text-gray-500 {
+            color: #A9A9A9;
+        }
+
+
+        body[data-theme="dark"] .tab {
+            color: #A9A9A9;
+        }
+        body[data-theme="dark"] .tab.active {
+            color: #60a5fa;
+            border-bottom-color: #60a5fa;
+        }
+
+        /* Dark theme for new settings modal */
+        body[data-theme="dark"] .settings-modal-content {
+            background-color: #1f2937;
+            color: #f3f4f6;
+        }
+        body[data-theme="dark"] .settings-header {
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
+        body[data-theme="dark"] .close-settings-btn {
+            background: #374151;
+            color: #d1d5db;
+        }
+        body[data-theme="dark"] .close-settings-btn:hover {
+            background: #4b5563;
+            color: white;
+        }
+        body[data-theme="dark"] .theme-label {
+            border-color: #4b5563;
+            background-color: #374151;
+        }
+        body[data-theme="dark"] .theme-option input:checked + .theme-label {
+            border-color: #60a5fa;
+            background-color: #1e3a8a;
+            color: white;
+        }
+        body[data-theme="dark"] .logic-input input {
+            border-color: #4b5563;
+            background-color: #374151;
+        }
+        body[data-theme="dark"] .logic-input p {
+            color: #9ca3af;
+        }
+        body[data-theme="dark"] .settings-icon {
+            background-color: #1A1A1D;
+            color: #A9A9A9;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+    </style>
 </head>
 <body>
-    <div class="container mx-auto px-4 py-8 max-w-5xl">
+
+    <!-- Custom Cursor (for Dark Mode) -->
+    <div class="cursor">
+        <div class="cursor-shape"></div>
+    </div>
+
+    <!-- WebGL Canvas for Dark Mode Background -->
+    <canvas id="dark-theme-canvas"></canvas>
+
+    <!-- Settings Icon -->
+    <div id="settings-icon" class="settings-icon cursor-target">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.438.995s.145.755.438.995l1.003.827c.48.398.668 1.03.26 1.431l-1.296 2.247a1.125 1.125 0 01-1.37.49l-1.217-.456c-.355-.133-.75-.072-1.075.124a6.57 6.57 0 01-.22.127c-.331.183-.581.495-.645.87l-.213 1.281c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.645-.87a6.52 6.52 0 01-.22-.127c-.324-.196-.72-.257-1.075-.124l-1.217.456a1.125 1.125 0 01-1.37-.49l-1.296-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.437-.995s-.145-.755-.437-.995l-1.004-.827a1.125 1.125 0 01-.26-1.431l1.296-2.247a1.125 1.125 0 011.37-.49l1.217.456c.355.133.75.072 1.075-.124.072-.044.146-.087.22-.127.332-.183.582-.495.645-.87l.213-1.281z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="settings-modal">
+        <div class="settings-modal-content">
+            <div class="settings-header">
+                <h2>Settings</h2>
+                <button class="close-settings-btn" aria-label="Close settings">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="settings-body">
+                <div class="setting-group">
+                    <h3>Theme</h3>
+                    <div class="theme-selector">
+                        <div class="theme-option">
+                            <input type="radio" id="theme-light" name="theme" value="light">
+                            <label for="theme-light" class="theme-label">Light</label>
+                        </div>
+                        <div class="theme-option">
+                            <input type="radio" id="theme-dark" name="theme" value="dark">
+                            <label for="theme-dark" class="theme-label">Dark</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="setting-group logic-input">
+                    <h3>LPG Efficiency Logic</h3>
+                    <label for="lpgMileageAdjust">LPG Efficiency (%)</label>
+                    <input type="number" id="lpgMileageAdjust" value="85">
+                    <p>Default is 85% (15% less efficient than Octane). Enter a new value.</p>
+                </div>
+                <div class="setting-group logic-input">
+                    <h3>CNG Savings Logic</h3>
+                    <label for="cngSavingsInput">CNG Savings % compared to Octane</label>
+                    <input type="number" id="cngSavingsInput" value="55">
+                    <p>Default is 55%. Enter a new value to adjust the calculation.</p>
+                </div>
+                <div class="setting-group">
+                    <button id="save-settings-btn">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="main-container container mx-auto px-4 py-8 max-w-5xl">
         <div class="text-center mb-8">
             <h1 class="text-3xl font-bold text-blue-800 mb-2">Fuel Cost Comparison Calculator</h1>
             <p class="text-gray-600">Calculate and compare your vehicle running costs for Octane, LPG, and CNG</p>
         </div>
 
-        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <div class="content-card bg-white rounded-lg shadow-lg p-6 mb-8">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-4">
                     <h2 class="text-xl font-semibold text-gray-800 border-b pb-2">Vehicle Details</h2>
-                    
                     <div>
                         <label for="distance" class="block text-sm font-medium text-gray-700 mb-1">Total Distance (km)</label>
                         <input type="number" id="distance" class="input-field w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="e.g. 1000" value="1000">
                     </div>
-                    
                     <div>
                         <label for="octaneMileage" class="block text-sm font-medium text-gray-700 mb-1">Octane Mileage (km/L)</label>
                         <input type="number" id="octaneMileage" class="input-field w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="e.g. 8 means 8Km/L" value="8">
                     </div>
                 </div>
-                
                 <div class="space-y-4">
                     <h2 class="text-xl font-semibold text-gray-800 border-b pb-2">Fuel Prices</h2>
-                    
                     <div>
                         <label for="octanePrice" class="block text-sm font-medium text-gray-700 mb-1">Octane Price (tk/L)</label>
                         <input type="number" id="octanePrice" class="input-field w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" value="122">
                     </div>
-                    
                     <div>
                         <label for="lpgPrice" class="block text-sm font-medium text-gray-700 mb-1">LPG Price (tk/L)</label>
                         <input type="number" id="lpgPrice" class="input-field w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" value="67">
                     </div>
                 </div>
             </div>
-            
             <div class="mt-6 text-center">
                 <button id="calculateBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
                     Calculate Savings
@@ -62,9 +823,8 @@
 
         <div id="resultsSection" class="hidden">
             <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Cost Comparison Results</h2>
-            <!-- Octane Section -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="result-card bg-white rounded-lg shadow-md p-5 border-t-4 border-blue-500">
+                <div class="result-card content-card bg-white rounded-lg shadow-md p-5 border-t-4 border-blue-500">
                     <h3 class="text-lg font-semibold text-blue-700 mb-3">Octane Cost</h3>
                     <div class="space-y-2 text-gray-600">
                         <p>Fuel Required: <span id="octaneLiters" class="font-medium text-gray-800">0</span> L</p>
@@ -75,8 +835,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- LPG Section -->
-                <div class="result-card bg-white rounded-lg shadow-md p-5 border-t-4 border-green-500">
+                <div class="result-card content-card bg-white rounded-lg shadow-md p-5 border-t-4 border-green-500">
                     <h3 class="text-lg font-semibold text-green-700 mb-3">LPG Cost</h3>
                     <div class="space-y-2 text-gray-600">
                         <p>Adjusted Mileage: <span id="lpgMileage" class="font-medium text-gray-800">0</span> km/L</p>
@@ -87,8 +846,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- CNG Section -->
-                <div class="result-card bg-white rounded-lg shadow-md p-5 border-t-4 border-purple-500">
+                <div class="result-card content-card bg-white rounded-lg shadow-md p-5 border-t-4 border-purple-500">
                     <h3 class="text-lg font-semibold text-purple-700 mb-3">CNG Cost</h3>
                     <div class="space-y-2 text-gray-600">
                         <p>CNG Range per Fill: <span id="cngRange" class="font-medium text-gray-800">0</span> km</p>
@@ -101,41 +859,31 @@
                 </div>
             </div>
             
-            <!-- Savings Comparison Section -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div class="result-card savings-highlight bg-white rounded-lg shadow-md p-5 border-t-4 border-emerald-500">
+                <div class="result-card savings-highlight content-card bg-white rounded-lg shadow-md p-5 border-t-4 border-emerald-500">
                     <h3 class="text-lg font-semibold text-emerald-700 mb-1">LPG vs Octane Savings</h3>
                     <div class="flex flex-col items-center justify-center h-full">
                         <div class="text-center">
-                            <p class="text-2xl font-bold text-emerald-600 mb-1">
-                                <span id="lpgSavingsAmount">0</span> tk
-                            </p>
+                            <p class="text-2xl font-bold text-emerald-600 mb-1"><span id="lpgSavingsAmount">0</span> tk</p>
                             <p class="text-gray-600">by using LPG instead of Octane</p>
-                            <p class="mt-3 text-sm font-medium text-emerald-700">
-                                That's <span id="lpgSavingsPercentage">0</span>% less!
-                            </p>
+                            <p class="mt-3 text-sm font-medium text-emerald-700">That's <span id="lpgSavingsPercentage">0</span>% less!</p>
                         </div>
                     </div>
                 </div>
                 
-                <div class="result-card savings-highlight bg-white rounded-lg shadow-md p-5 border-t-4 border-indigo-500">
+                <div class="result-card savings-highlight content-card bg-white rounded-lg shadow-md p-5 border-t-4 border-indigo-500">
                     <h3 class="text-lg font-semibold text-indigo-700 mb-1">CNG vs Octane Savings</h3>
                     <div class="flex flex-col items-center justify-center h-full">
                         <div class="text-center">
-                            <p class="text-2xl font-bold text-indigo-600 mb-1">
-                                <span id="cngSavingsAmount">0</span> tk
-                            </p>
+                            <p class="text-2xl font-bold text-indigo-600 mb-1"><span id="cngSavingsAmount">0</span> tk</p>
                             <p class="text-gray-600">by using CNG instead of Octane</p>
-                            <p class="mt-3 text-sm font-medium text-indigo-700">
-                                That's <span id="cngSavingsPercentage">0</span>% less!
-                            </p>
+                            <p class="mt-3 text-sm font-medium text-indigo-700">That's <span id="cngSavingsPercentage">0</span>% less!</p>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- CNG vs LPG Comparison -->
-            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div class="content-card bg-white rounded-lg shadow-md p-6 mb-8">
                 <h3 class="text-xl font-semibold text-gray-800 mb-4">CNG vs LPG Comparison</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="border rounded-lg p-4">
@@ -154,26 +902,20 @@
                         <div class="space-y-2">
                             <p>CNG Cost per km: <span id="cngEfficiency" class="font-medium text-purple-600">0</span> tk/km</p>
                             <p>LPG Cost per km: <span id="lpgEfficiency" class="font-medium text-green-600">0</span> tk/km</p>
-                            <p class="font-bold border-t pt-2 mt-2">
-                                Difference: <span id="efficiencyDifference" class="text-indigo-600">0</span> tk/km
-                            </p>
+                            <p class="font-bold border-t pt-2 mt-2">Difference: <span id="efficiencyDifference" class="text-indigo-600">0</span> tk/km</p>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="content-card bg-white rounded-lg shadow-md p-6">
                 <h3 class="text-xl font-semibold text-gray-800 mb-4">Detailed Comparison</h3>
-                
-                <!-- Tabs -->
                 <div class="flex border-b mb-4">
                     <button id="tabAll" class="tab active px-4 py-2 font-medium">All Fuels</button>
                     <button id="tabOctaneLpg" class="tab px-4 py-2 font-medium">Octane vs LPG</button>
                     <button id="tabOctaneCng" class="tab px-4 py-2 font-medium">Octane vs CNG</button>
                     <button id="tabLpgCng" class="tab px-4 py-2 font-medium">LPG vs CNG</button>
                 </div>
-                
-                <!-- All Fuels Table -->
                 <div id="tableAll" class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead>
@@ -212,11 +954,9 @@
                         </tbody>
                     </table>
                 </div>
-                
-                <!-- Octane vs LPG Table -->
                 <div id="tableOctaneLpg" class="overflow-x-auto hidden">
                     <table class="min-w-full divide-y divide-gray-200">
-                        <thead>
+                         <thead>
                             <tr>
                                 <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Metric</th>
                                 <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Octane</th>
@@ -229,7 +969,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Mileage (km/L)</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tableMileageOctane">0</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tableMileageLPG">0</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-15%</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" id="tableMileageLpgDiff">-15%</td>
                             </tr>
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Fuel Required (L)</td>
@@ -252,8 +992,6 @@
                         </tbody>
                     </table>
                 </div>
-                
-                <!-- Octane vs CNG Table -->
                 <div id="tableOctaneCng" class="overflow-x-auto hidden">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead>
@@ -263,7 +1001,7 @@
                                 <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">CNG</th>
                                 <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Difference</th>
                             </tr>
-                        </thead>
+</thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Cost per km (tk)</td>
@@ -292,8 +1030,6 @@
                         </tbody>
                     </table>
                 </div>
-                
-                <!-- LPG vs CNG Table -->
                 <div id="tableLpgCng" class="overflow-x-auto hidden">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead>
@@ -327,8 +1063,7 @@
             </div>
         </div>
         
-        <!-- Copyright Footer ©Alvee -->
-        <div class="mt-10 text-center py-4 border-t border-gray-200">
+        <div class="mt-10 text-center py-4 border-t border-gray-200 footer">
             <div class="text-gray-600 text-sm mb-2">
                 © 2025 Fuel Cost Comparison Calculator | Designed By Faruque Azam Alvee
             </div>
@@ -344,181 +1079,399 @@
         </div>
     </div>
 
+    <!-- Shader Scripts for Dark Mode Background -->
+    <script type="x-shader/x-vertex" id="vertexShader">
+        void main() {
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    </script>
+    <script type="x-shader/x-fragment" id="fragmentShader">
+        uniform vec2 u_resolution;
+        uniform float u_time;
+        uniform vec2 u_mouse;
+
+        float random(vec2 st) {
+            return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
+        }
+
+        float noise(vec2 st) {
+            vec2 i = floor(st);
+            vec2 f = fract(st);
+            float a = random(i);
+            float b = random(i + vec2(1.0, 0.0));
+            float c = random(i + vec2(0.0, 1.0));
+            float d = random(i + vec2(1.0, 1.0));
+            vec2 u = f * f * (3.0 - 2.0 * f);
+            return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+        }
+
+        void main() {
+            vec2 st = gl_FragCoord.xy / u_resolution.xy;
+            st.x *= u_resolution.x / u_resolution.y;
+
+            float n = noise(st * 2.0 + u_time * 0.1);
+
+            vec3 color_dark = vec3(0.05, 0.1, 0.18);
+            vec3 color_mid = vec3(0.051, 0.152, 0.255);
+            vec3 color_light = vec3(0.753, 0.976, 0.518);
+
+            vec3 base_color = mix(color_dark, color_mid, smoothstep(0.3, 0.6, n));
+            base_color = mix(base_color, color_light, smoothstep(0.7, 0.75, n));
+            
+            float grain = random(st * 2.0 + u_time) * 0.15;
+            base_color -= grain;
+            base_color *= 0.85;
+
+            gl_FragColor = vec4(base_color, 1.0);
+        }
+    </script>
+
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Set up the calculate button
+            // --- DOM Element References ---
+            const settingsIcon = document.getElementById('settings-icon');
+            const settingsModal = document.getElementById('settings-modal');
+            const closeSettingsBtns = document.querySelectorAll('.close-settings-btn');
+            const saveSettingsBtn = document.getElementById('save-settings-btn');
             const calculateBtn = document.getElementById('calculateBtn');
-            calculateBtn.addEventListener('click', calculateCosts);
+            const cngSavingsInput = document.getElementById('cngSavingsInput');
+            const lpgMileageAdjustInput = document.getElementById('lpgMileageAdjust');
+
+            // --- App State ---
+            let customCursorGloballyEnabled = false;
+            let cursorIsInitialized = false;
+
+            let darkThemeState = {
+                active: false,
+                scene: null,
+                camera: null,
+                renderer: null,
+                uniforms: null,
+                clock: null,
+                reqId: null,
+            };
+
+            // --- Settings ---
+            function toggleModal(show) {
+                if (show) {
+                    settingsModal.classList.add('visible');
+                } else {
+                    settingsModal.classList.remove('visible');
+                }
+            }
+
+            function saveSettings() {
+                const selectedTheme = document.querySelector('input[name="theme"]:checked').value;
+                const cngSavings = parseFloat(cngSavingsInput.value) || 55;
+                const lpgAdjust = parseFloat(lpgMileageAdjustInput.value) || 85;
+
+                localStorage.setItem('fuelCalcTheme', selectedTheme);
+                localStorage.setItem('fuelCalcCngSavings', cngSavings);
+                localStorage.setItem('fuelCalcLpgAdjust', lpgAdjust);
+
+                applySettings();
+                toggleModal(false);
+                calculateCosts(); 
+            }
+
+            function applySettings() {
+                const theme = localStorage.getItem('fuelCalcTheme') || 'light';
+                const cngSavings = localStorage.getItem('fuelCalcCngSavings') || 55;
+                const lpgAdjust = localStorage.getItem('fuelCalcLpgAdjust') || 85;
+
+                document.body.dataset.theme = theme;
+                cngSavingsInput.value = cngSavings;
+                lpgMileageAdjustInput.value = lpgAdjust;
+
+                const themeRadio = document.querySelector(`input[name="theme"][value="${theme}"]`);
+                if (themeRadio) themeRadio.checked = true;
+                
+                if (theme === 'dark') {
+                    if (!darkThemeState.active) initDarkThemeEffects();
+                    customCursorGloballyEnabled = true;
+                    showCustomCursor();
+                } else {
+                    if (darkThemeState.active) destroyDarkThemeEffects();
+                    if (customCursorGloballyEnabled) {
+                        showCustomCursor();
+                    } else {
+                        hideCustomCursor();
+                    }
+                }
+            }
             
-            // Set up tabs
-            const tabs = document.querySelectorAll('.tab');
-            const tables = ['tableAll', 'tableOctaneLpg', 'tableOctaneCng', 'tableLpgCng'];
+            // --- Cursor Control ---
+            function showCustomCursor() {
+                if (!cursorIsInitialized) {
+                    initCursor();
+                    cursorIsInitialized = true;
+                }
+                const cursor = document.querySelector('.cursor');
+                if (cursor) {
+                    cursor.style.display = 'flex';
+                }
+                document.body.classList.add('custom-cursor-active');
+            }
+
+            function hideCustomCursor() {
+                const cursor = document.querySelector('.cursor');
+                if (cursor) {
+                    cursor.style.display = 'none';
+                }
+                document.body.classList.remove('custom-cursor-active');
+            }
             
-            tabs.forEach((tab, index) => {
-                tab.addEventListener('click', () => {
-                    // Remove active class from all tabs
-                    tabs.forEach(t => t.classList.remove('active'));
-                    // Add active class to clicked tab
-                    tab.classList.add('active');
-                    
-                    // Hide all tables
-                    tables.forEach(tableId => {
-                        document.getElementById(tableId).classList.add('hidden');
-                    });
-                    
-                    // Show the selected table
-                    document.getElementById(tables[index]).classList.remove('hidden');
+            function initCursor() {
+                const cursor = document.querySelector('.cursor');
+                const cursorShape = document.querySelector('.cursor-shape');
+                if (typeof gsap === 'undefined') return;
+
+                gsap.set(cursor, { xPercent: -50, yPercent: -50 });
+
+                window.addEventListener('mousemove', e => {
+                    gsap.to(cursor, { duration: 0.4, x: e.clientX, y: e.clientY, ease: 'power3.out' });
                 });
-            });
+                
+                document.body.addEventListener('mouseenter', () => {
+                     gsap.to(cursorShape, { scale: 1, opacity: 1 });
+                });
+                document.body.addEventListener('mouseleave', () => {
+                     gsap.to(cursorShape, { scale: 0, opacity: 0 });
+                });
+                
+                document.querySelectorAll('a, button, input, .cursor-target, label[for]').forEach(el => {
+                    el.addEventListener('mouseenter', () => gsap.to(cursorShape, { scale: 1.5, duration: 0.3 }));
+                    el.addEventListener('mouseleave', () => gsap.to(cursorShape, { scale: 1, duration: 0.3 }));
+                });
+            }
+
+            // --- Dark Theme Effects ---
+            function initDarkThemeEffects() {
+                darkThemeState.active = true;
+                const canvas = document.getElementById('dark-theme-canvas');
+                canvas.style.display = 'block';
+
+                darkThemeState.scene = new THREE.Scene();
+                darkThemeState.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+                darkThemeState.renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: false });
+                darkThemeState.clock = new THREE.Clock();
+
+                darkThemeState.uniforms = {
+                    u_time: { value: 0.0 },
+                    u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+                    u_mouse: { value: new THREE.Vector2(0, 0) }
+                };
+
+                const geometry = new THREE.PlaneGeometry(2, 2);
+                const material = new THREE.ShaderMaterial({
+                    uniforms: darkThemeState.uniforms,
+                    vertexShader: document.getElementById('vertexShader').textContent,
+                    fragmentShader: document.getElementById('fragmentShader').textContent
+                });
+
+                const mesh = new THREE.Mesh(geometry, material);
+                darkThemeState.scene.add(mesh);
+
+                window.addEventListener('resize', onWindowResize, false);
+                window.addEventListener('mousemove', onMouseMove, false);
+                onWindowResize();
+                animate();
+            }
+
+            function destroyDarkThemeEffects() {
+                darkThemeState.active = false;
+                const canvas = document.getElementById('dark-theme-canvas');
+                if (canvas) canvas.style.display = 'none';
+
+                window.removeEventListener('resize', onWindowResize, false);
+                window.removeEventListener('mousemove', onMouseMove, false);
+
+                if (darkThemeState.reqId) {
+                    cancelAnimationFrame(darkThemeState.reqId);
+                    darkThemeState.reqId = null;
+                }
+            }
+
+            function onWindowResize() {
+                if (!darkThemeState.active) return;
+                darkThemeState.renderer.setSize(window.innerWidth, window.innerHeight);
+                darkThemeState.uniforms.u_resolution.value.set(window.innerWidth, window.innerHeight);
+            }
             
-            // Calculate on page load with default values
-            calculateCosts();
-            
+            function onMouseMove(event) {
+                if (!darkThemeState.active) return;
+                darkThemeState.uniforms.u_mouse.value.set(event.clientX, event.clientY);
+            }
+
+            function animate() {
+                if (!darkThemeState.active) return;
+                darkThemeState.reqId = requestAnimationFrame(animate);
+                darkThemeState.uniforms.u_time.value = darkThemeState.clock.getElapsedTime();
+                darkThemeState.renderer.render(darkThemeState.scene, darkThemeState.camera);
+            }
+
+            // --- Calculation Logic ---
             function calculateCosts() {
-                // Get input values
                 const distance = parseFloat(document.getElementById('distance').value) || 0;
                 const octaneMileage = parseFloat(document.getElementById('octaneMileage').value) || 0;
                 const octanePrice = parseFloat(document.getElementById('octanePrice').value) || 0;
                 const lpgPrice = parseFloat(document.getElementById('lpgPrice').value) || 0;
-                
-                // Validate inputs
+                const cngSavingsPercent = parseFloat(localStorage.getItem('fuelCalcCngSavings') || 55);
+                const lpgAdjustPercent = parseFloat(localStorage.getItem('fuelCalcLpgAdjust') || 85);
+
                 if (distance <= 0 || octaneMileage <= 0 || octanePrice <= 0 || lpgPrice <= 0) {
-                    alert('Please enter valid positive numbers for all fields.');
                     return;
                 }
                 
-                // Calculate Octane costs
                 const octaneLiters = distance / octaneMileage;
                 const octaneCost = octaneLiters * octanePrice;
-                const octaneCostPerKm = octaneCost / distance;
+                const octaneCostPerKm = octaneCost > 0 ? octaneCost / distance : 0;
                 
-                // Calculate LPG costs (15% lower mileage)
-                const lpgMileage = octaneMileage * 0.85;
-                const lpgLiters = distance / lpgMileage;
+                const lpgMileage = octaneMileage * (lpgAdjustPercent / 100);
+                const lpgLiters = lpgMileage > 0 ? distance / lpgMileage : 0;
                 const lpgCost = lpgLiters * lpgPrice;
-                const lpgCostPerKm = lpgCost / distance;
-                
-                // Calculate LPG savings
+                const lpgCostPerKm = lpgCost > 0 ? lpgCost / distance : 0;
                 const lpgSavings = octaneCost - lpgCost;
-                const lpgSavingsPercentage = (lpgSavings / octaneCost) * 100;
+                const lpgSavingsPercentage = octaneCost > 0 ? (lpgSavings / octaneCost) * 100 : 0;
                 
-                // Calculate CNG costs (55% less than Octane)
-                // Determine CNG range per fill based on octane mileage
                 let cngRangePerFill = 0;
-                if (octaneMileage < 8) {
-                    cngRangePerFill = 80;
-                } else if (octaneMileage > 20) {
-                    cngRangePerFill = 150;
-                } else {
-                    // For mileage between 8 and 20, calculate range (10 km/L = 100 km range)
-                    cngRangePerFill = Math.min(80 + (octaneMileage - 8) * 10, 150);
-                }
+                if (octaneMileage < 8) cngRangePerFill = 80;
+                else if (octaneMileage > 20) cngRangePerFill = 150;
+                else cngRangePerFill = Math.min(80 + (octaneMileage - 8) * 10, 150);
                 
-                // Calculate number of CNG fill-ups needed
-                const cngFillups = Math.ceil(distance / cngRangePerFill);
-                
-                // CNG cost is 55% less than Octane cost
-                const cngCost = octaneCost * 0.45; // 45% of Octane cost (55% less)
-                const cngCostPerKm = cngCost / distance;
-                
-                // Calculate CNG savings
+                const cngFillups = cngRangePerFill > 0 ? Math.ceil(distance / cngRangePerFill) : 0;
+                const cngCost = octaneCost * (1 - (cngSavingsPercent / 100));
+                const cngCostPerKm = cngCost > 0 ? cngCost / distance : 0;
                 const cngSavings = octaneCost - cngCost;
-                const cngSavingsPercentage = (cngSavings / octaneCost) * 100;
+                const cngSavingsPercentage = octaneCost > 0 ? (cngSavings / octaneCost) * 100 : 0;
                 
-                // Compare LPG and CNG
                 const lpgVsCngSavings = lpgCost - cngCost;
                 const costPerKmDifference = Math.abs(lpgCostPerKm - cngCostPerKm);
                 const mostEfficientFuel = cngCostPerKm < lpgCostPerKm ? "CNG" : "LPG";
-                
-                // Update the results section
+
                 document.getElementById('resultsSection').classList.remove('hidden');
                 
-                // Update Octane card
-                document.getElementById('octaneLiters').textContent = octaneLiters.toFixed(2);
-                document.getElementById('octanePriceDisplay').textContent = octanePrice.toFixed(2);
-                document.getElementById('octaneCostPerKmDisplay').textContent = octaneCostPerKm.toFixed(2);
-                document.getElementById('octaneCost').textContent = octaneCost.toFixed(2);
-                
-                // Update LPG card
-                document.getElementById('lpgMileage').textContent = lpgMileage.toFixed(2);
-                document.getElementById('lpgLiters').textContent = lpgLiters.toFixed(2);
-                document.getElementById('lpgPriceDisplay').textContent = lpgCostPerKm.toFixed(2);
-                document.getElementById('lpgCost').textContent = lpgCost.toFixed(2);
-                
-                // Update CNG card
-                document.getElementById('cngRange').textContent = cngRangePerFill.toFixed(0);
+                const updateField = (id, value, decimals = 2) => {
+                    const el = document.getElementById(id);
+                    if (el) el.textContent = value.toFixed(decimals);
+                };
+                const updateFieldWithSuffix = (id, value, suffix, decimals = 1) => {
+                    const el = document.getElementById(id);
+                    if (el) el.textContent = value.toFixed(decimals) + suffix;
+                };
+
+                updateField('octaneLiters', octaneLiters);
+                updateField('octanePriceDisplay', octanePrice);
+                updateField('octaneCostPerKmDisplay', octaneCostPerKm);
+                updateField('octaneCost', octaneCost);
+                updateField('lpgMileage', lpgMileage);
+                updateField('lpgLiters', lpgLiters);
+                updateField('lpgPriceDisplay', lpgCostPerKm);
+                updateField('lpgCost', lpgCost);
+                updateField('cngRange', cngRangePerFill, 0);
                 document.getElementById('cngFillups').textContent = cngFillups;
-                document.getElementById('cngCostPerKm').textContent = cngCostPerKm.toFixed(2);
-                document.getElementById('cngCost').textContent = cngCost.toFixed(2);
-                
-                // Update LPG Savings card
-                document.getElementById('lpgSavingsAmount').textContent = lpgSavings.toFixed(2);
-                document.getElementById('lpgSavingsPercentage').textContent = lpgSavingsPercentage.toFixed(1);
-                
-                // Update CNG Savings card
-                document.getElementById('cngSavingsAmount').textContent = cngSavings.toFixed(2);
-                document.getElementById('cngSavingsPercentage').textContent = cngSavingsPercentage.toFixed(1);
-                
-                // Update CNG vs LPG comparison
-                document.getElementById('cngTotalCost').textContent = cngCost.toFixed(2);
-                document.getElementById('lpgTotalCost').textContent = lpgCost.toFixed(2);
-                
+                updateField('cngCostPerKm', cngCostPerKm);
+                updateField('cngCost', cngCost);
+                updateField('lpgSavingsAmount', lpgSavings);
+                updateField('lpgSavingsPercentage', lpgSavingsPercentage, 1);
+                updateField('cngSavingsAmount', cngSavings);
+                updateField('cngSavingsPercentage', cngSavingsPercentage, 1);
+                updateField('cngTotalCost', cngCost);
+                updateField('lpgTotalCost', lpgCost);
+
                 if (cngCost < lpgCost) {
                     document.getElementById('cngVsLpgLabel').textContent = "Savings with CNG:";
-                    document.getElementById('cngVsLpgSavings').textContent = lpgVsCngSavings.toFixed(2);
+                    updateField('cngVsLpgSavings', lpgVsCngSavings);
                 } else {
                     document.getElementById('cngVsLpgLabel').textContent = "Savings with LPG:";
-                    document.getElementById('cngVsLpgSavings').textContent = (-lpgVsCngSavings).toFixed(2);
+                    updateField('cngVsLpgSavings', -lpgVsCngSavings);
                 }
-                
-                document.getElementById('cngEfficiency').textContent = cngCostPerKm.toFixed(2);
-                document.getElementById('lpgEfficiency').textContent = lpgCostPerKm.toFixed(2);
-                document.getElementById('efficiencyDifference').textContent = costPerKmDifference.toFixed(2);
-                
-                // Update All Fuels table
-                document.getElementById('costPerKmOctane').textContent = octaneCostPerKm.toFixed(2);
-                document.getElementById('costPerKmLPG').textContent = lpgCostPerKm.toFixed(2);
-                document.getElementById('costPerKmCNG').textContent = cngCostPerKm.toFixed(2);
-                document.getElementById('totalCostOctane').textContent = octaneCost.toFixed(2);
-                document.getElementById('totalCostLPG').textContent = lpgCost.toFixed(2);
-                document.getElementById('totalCostCNG').textContent = cngCost.toFixed(2);
-                document.getElementById('savingsLPG').textContent = lpgSavings.toFixed(2);
-                document.getElementById('savingsCNG').textContent = cngSavings.toFixed(2);
-                document.getElementById('savingsPercentLPG').textContent = lpgSavingsPercentage.toFixed(1) + "%";
-                document.getElementById('savingsPercentCNG').textContent = cngSavingsPercentage.toFixed(1) + "%";
-                
-                // Update Octane vs LPG table
-                document.getElementById('tableMileageOctane').textContent = octaneMileage.toFixed(2);
-                document.getElementById('tableMileageLPG').textContent = lpgMileage.toFixed(2);
-                document.getElementById('tableLitersOctane').textContent = octaneLiters.toFixed(2);
-                document.getElementById('tableLitersLPG').textContent = lpgLiters.toFixed(2);
-                document.getElementById('tableLitersDiff').textContent = (lpgLiters - octaneLiters).toFixed(2);
-                document.getElementById('tablePriceOctane').textContent = octanePrice.toFixed(2);
-                document.getElementById('tablePriceLPG').textContent = lpgPrice.toFixed(2);
-                document.getElementById('tablePriceDiff').textContent = (lpgPrice - octanePrice).toFixed(2);
-                document.getElementById('tableCostOctane').textContent = octaneCost.toFixed(2);
-                document.getElementById('tableCostLPG').textContent = lpgCost.toFixed(2);
-                document.getElementById('tableSavings').textContent = lpgSavings.toFixed(2);
-                
-                // Update Octane vs CNG table
-                document.getElementById('tableOctaneCostPerKm').textContent = octaneCostPerKm.toFixed(2);
-                document.getElementById('tableCngCostPerKm').textContent = cngCostPerKm.toFixed(2);
-                document.getElementById('tableCostPerKmDiff').textContent = (octaneCostPerKm - cngCostPerKm).toFixed(2);
-                document.getElementById('tableCngRange').textContent = cngRangePerFill.toFixed(0);
-                document.getElementById('tableOctaneTotalCost').textContent = octaneCost.toFixed(2);
-                document.getElementById('tableCngTotalCost').textContent = cngCost.toFixed(2);
-                document.getElementById('tableCngSavings').textContent = cngSavings.toFixed(2);
-                document.getElementById('tableCngSavingsPercent').textContent = cngSavingsPercentage.toFixed(1) + "%";
-                
-                // Update LPG vs CNG table
-                document.getElementById('tableLpgCostPerKm').textContent = lpgCostPerKm.toFixed(2);
-                document.getElementById('tableCngCostPerKm2').textContent = cngCostPerKm.toFixed(2);
-                document.getElementById('tableLpgCngCostDiff').textContent = costPerKmDifference.toFixed(2);
-                document.getElementById('tableLpgTotalCost').textContent = lpgCost.toFixed(2);
-                document.getElementById('tableCngTotalCost2').textContent = cngCost.toFixed(2);
-                document.getElementById('tableLpgCngDiff').textContent = Math.abs(lpgCost - cngCost).toFixed(2);
+
+                updateField('cngEfficiency', cngCostPerKm);
+                updateField('lpgEfficiency', lpgCostPerKm);
+                updateField('efficiencyDifference', costPerKmDifference);
+                updateField('costPerKmOctane', octaneCostPerKm);
+                updateField('costPerKmLPG', lpgCostPerKm);
+                updateField('costPerKmCNG', cngCostPerKm);
+                updateField('totalCostOctane', octaneCost);
+                updateField('totalCostLPG', lpgCost);
+                updateField('totalCostCNG', cngCost);
+                updateField('savingsLPG', lpgSavings);
+                updateField('savingsCNG', cngSavings);
+                updateFieldWithSuffix('savingsPercentLPG', lpgSavingsPercentage, "%");
+                updateFieldWithSuffix('savingsPercentCNG', cngSavingsPercentage, "%");
+                updateField('tableMileageOctane', octaneMileage);
+                updateField('tableMileageLPG', lpgMileage);
+                document.getElementById('tableMileageLpgDiff').textContent = `${(lpgAdjustPercent - 100).toFixed(0)}%`;
+                updateField('tableLitersOctane', octaneLiters);
+                updateField('tableLitersLPG', lpgLiters);
+                updateField('tableLitersDiff', lpgLiters - octaneLiters);
+                updateField('tablePriceOctane', octanePrice);
+                updateField('tablePriceLPG', lpgPrice);
+                updateField('tablePriceDiff', lpgPrice - octanePrice);
+                updateField('tableCostOctane', octaneCost);
+                updateField('tableCostLPG', lpgCost);
+                updateField('tableSavings', lpgSavings);
+                updateField('tableOctaneCostPerKm', octaneCostPerKm);
+                updateField('tableCngCostPerKm', cngCostPerKm);
+                updateField('tableCostPerKmDiff', octaneCostPerKm - cngCostPerKm);
+                updateField('tableCngRange', cngRangePerFill, 0);
+                updateField('tableOctaneTotalCost', octaneCost);
+                updateField('tableCngTotalCost', cngCost);
+                updateField('tableCngSavings', cngSavings);
+                updateFieldWithSuffix('tableCngSavingsPercent', cngSavingsPercentage, "%");
+                updateField('tableLpgCostPerKm', lpgCostPerKm);
+                updateField('tableCngCostPerKm2', cngCostPerKm);
+                updateField('tableLpgCngCostDiff', costPerKmDifference);
+                updateField('tableLpgTotalCost', lpgCost);
+                updateField('tableCngTotalCost2', cngCost);
+                updateField('tableLpgCngDiff', Math.abs(lpgCost - cngCost));
                 document.getElementById('tableMostEconomical').textContent = `${mostEfficientFuel} is more economical by ${costPerKmDifference.toFixed(2)} tk per km`;
             }
+
+            // --- Tab Logic ---
+            const tabs = document.querySelectorAll('.tab');
+            const tables = ['tableAll', 'tableOctaneLpg', 'tableOctaneCng', 'tableLpgCng'];
+            tabs.forEach((tab, index) => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    tables.forEach(tableId => document.getElementById(tableId).classList.add('hidden'));
+                    document.getElementById(tables[index]).classList.remove('hidden');
+                });
+            });
+            
+            // --- Keyboard Shortcuts ---
+            window.addEventListener('keydown', (e) => {
+                if (settingsModal.classList.contains('visible')) {
+                    if (e.key === 'Escape') {
+                        toggleModal(false);
+                    }
+                    if (e.key === 'Enter' && document.activeElement.tagName !== 'BUTTON') {
+                        e.preventDefault();
+                        saveSettings();
+                    }
+                }
+                
+                if (e.key.toLowerCase() === 'c') {
+                    customCursorGloballyEnabled = !customCursorGloballyEnabled;
+                    if (customCursorGloballyEnabled) {
+                        showCustomCursor();
+                    } else {
+                        hideCustomCursor();
+                    }
+                }
+            });
+
+            // --- Initial Setup ---
+            settingsIcon.addEventListener('click', () => toggleModal(true));
+            closeSettingsBtns.forEach(btn => btn.addEventListener('click', () => toggleModal(false)));
+            saveSettingsBtn.addEventListener('click', saveSettings);
+            calculateBtn.addEventListener('click', calculateCosts);
+            
+            applySettings();
+            calculateCosts();
         });
     </script>
 </body>
